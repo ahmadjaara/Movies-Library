@@ -10,11 +10,11 @@ app.use(cors());
 
 
 app.use(function errorHandler (err, req, res, next) {
-    let err={
+    let error ={
         status:500,
         err:'Sorry, something went wrong'
     };
-    res.status(500).send(err)
+    res.status(500).send(error)
   })
 
 
