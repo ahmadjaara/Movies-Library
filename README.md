@@ -21,6 +21,8 @@ Add an image of your WRRC here
 
 3. find a 3rd party API to bring data to my app.
 
+4. create a database sotorage to save the post process from the user using sql 
+
 ## Project Features
 <!-- What are the features included in you app -->
-an app for movies and tv show the user can search for movies and populer tv show and learn about its details  
+an app for movies and tv show the user can search for movies and populer tv show and learn about its details  and can make alist for its movies and get the data any time he/she need .
