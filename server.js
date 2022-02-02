@@ -145,8 +145,8 @@ function tvHandler(req,res){
 
 function addMovie(req,res){
 console.log(req.body);    
-let sql = `INSERT INTO MoviesLibrary (id,title,release_date,poster_path,overview)VALUES($1,$2,$3,$4,$5) RETURNING*`;
-let values=[req.body.id,req.body.title,req.body.release_date,req.body.poster_path,req.body.overview];
+let sql = `INSERT INTO MoviesLibrary (title,release_date,poster_path,overview)VALUES($1,$2,$3,$4) RETURNING*;`
+let values=[req.body.title,req.body.release_date,req.body.poster_path,req.body.overview];
 client.query(sql,values)
 .then(data =>{
 res.status(200).json(data.rows);})
@@ -157,7 +157,7 @@ res.status(200).json(data.rows);})
 
 
 function getMovie(req,res){
-    let sql = `SELECT * FROM MoviesLibrary`;
+    let sql = `SELECT * FROM MoviesLibrary;`
     client.query(sql).then(data=>{
        res.status(200).json(data.rows);
     }).catch(error=>{
