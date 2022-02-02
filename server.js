@@ -3,32 +3,39 @@ const express = require('express');
 const cors = require('cors');
 const axios =require('axios');
 
+const pg =require('pg');//it provide 
+const { database } = require('pg');
+
+const client = new pg.Client(process.env.DATABASE_URL);
+
+
+
 const port=process.env.PORT;
 
 const app =express();
 app.use(cors());
+app.use(express.json());
 
 
-app.use(function errorHandler (err, req, res, next) {
-    let error ={
-        status:500,
-        err:'Sorry, something went wrong'
-    };
-    res.status(500).send(error)
-  })
+
 
 
 //   const moviedata =require ('./data.json');
-let userSearch ="spider-Man"
+// let userSearch ="spider-Man"
 
 app.get('/trending',trendingHandler);
 app.get('/search',searchHandler);
 app.get('/certification',certHandler);
 app.get('/tv/popular',tvHandler);
-app.get('*',notfoundHandler);
 
+
+app.post('/addMovie',addMovie);//crud operation for databse create read update delete\drop==>http method :post get put delete
+app.get('/getMovies',getMovie);
+
+app.get('*',notfoundHandler);
+app.use(errorHandler) ;
 let urlTr =`https://api.themoviedb.org/3/trending/all/week?api_key=${process.env.APIKEY}`;
-let urlSearch =`https://api.themoviedb.org/3/search/movie?api_key=${process.env.APIKEY}&language=en-US&query=${userSearch}&page=2`;
+
 let urlCert =`https://api.themoviedb.org/3/certification/movie/list?api_key=${process.env.APIKEY}`;
 let urlTvPop =`https://api.themoviedb.org/3/tv/popular?api_key=${process.env.APIKEY}&language=en-US&page=1`;
 
@@ -67,14 +74,15 @@ function trendingHandler(req,res){
         //console.log(newarr)
         res.status(200).json(newarr);
 
-    }).catch((err)=>{
-        errorHandler (err, req, res, next);
+    }).catch((error)=>{
+       errorHandler (error,req,res);
     })
 };
 
 
 function searchHandler(req,res){
-
+    let userSearch =req.query.userSearch;
+    let urlSearch =`https://api.themoviedb.org/3/search/movie?api_key=${process.env.APIKEY}&language=en-US&query=${userSearch}&page=2`;
     let newarr=[];
     axios.get(urlSearch)
     .then((result)=>{
@@ -84,9 +92,8 @@ function searchHandler(req,res){
         //console.log(newarr)
         res.status(200).json(newarr);
 
-    }).catch((err)=>{
-        errorHandler (err, req, res, next);
-
+    }).catch((error)=>{
+        errorHandler (error,req,res);
     })
 };
 
@@ -106,14 +113,9 @@ function certHandler(req,res){
         //console.log(newarr)
        res.status(200).json(newarr);
 
-    }).catch((err)=>{
-        errorHandler (err, req, res, next);
-
-    })
-    
-
-    
-};
+    }).catch((error)=>{
+       errorHandler (error,req,res);
+    })};
 
 function Tvpop(nametv,id,first_air_date,backdrop_path,overview,vote_average){
     this.name = nametv,
@@ -135,12 +137,33 @@ function tvHandler(req,res){
         //console.log(newarr)
         res.status(200).json(newarr);
 
-    }).catch((err)=>{
-        errorHandler (err, req, res, next);
+    }).catch((error)=>{
+       errorHandler (error,req,res);
     })
     
 };
 
+function addMovie(req,res){
+console.log(req.body);    
+let sql = `INSERT INTO MoviesLibrary (id,title,release_date,poster_path,overview)VALUES($1,$2,$3,$4,$5) RETURNING*`;
+let values=[req.body.id,req.body.title,req.body.release_date,req.body.poster_path,req.body.overview];
+client.query(sql,values)
+.then(data =>{
+res.status(200).json(data.rows);})
+.catch((error)=>{
+       errorHandler(error,req,res)});
+};
+
+
+
+function getMovie(req,res){
+    let sql = `SELECT * FROM MoviesLibrary`;
+    client.query(sql).then(data=>{
+       res.status(200).json(data.rows);
+    }).catch(error=>{
+        errorHandler(error,req,res)
+    });
+}
 
 
 function notfoundHandler(req,res){
@@ -148,9 +171,18 @@ function notfoundHandler(req,res){
 
 };
 
+function errorHandler (error,req,res){
+    const err = {
+        status : 500,
+        messgae : "error"
+        };
+    res.status(500).send(err)}
 
 
-app.listen(port, ()=> {
-    console.log(`listen to port ${port}`)
+client.connect().then(()=>{
+    app.listen(port, ()=> {
+        console.log(`listen to port ${port}`)
+    })
+
 });
 
