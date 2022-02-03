@@ -32,6 +32,15 @@ app.get('/tv/popular',tvHandler);
 app.post('/addMovie',addMovie);//crud operation for databse create read update delete\drop==>http method :post get put delete
 app.get('/getMovies',getMovie);
 
+
+
+app.get('/oneFilm/:id',oneFilmHandler);
+
+
+app.put('/updatefilm/:id',updatefilmHandler); // the name param is just for testing 
+app.delete('/deletefilm/:id',deletefilmHandler);
+
+
 app.get('*',notfoundHandler);
 app.use(errorHandler) ;
 let urlTr =`https://api.themoviedb.org/3/trending/all/week?api_key=${process.env.APIKEY}`;
@@ -166,6 +175,46 @@ function getMovie(req,res){
 }
 
 
+function oneFilmHandler(req,res){
+
+    let sql = `SELECT * FROM MoviesLibrary WHERE id=${req.params.id};`;
+    // let sql = `SELECT * FROM favRecipes WHERE readyInMinutes<60;`;
+
+    client.query(sql).then(data=>{
+       res.status(200).json(data.rows);
+    }).catch(error=>{
+        errorHandler(error,req,res)
+    });
+}
+
+function updatefilmHandler (req,res){
+    const id = req.params.id;
+    console.log(req.params.name);
+    const film = req.body;
+    const sql = `UPDATE MoviesLibrary SET title =$1, release_date = $2, poster_path = $3 ,overview=$4, WHERE id=$5 RETURNING *;`; 
+    let values=[film.title,film.release_date,film.poster_path,film.overview,id];
+    client.query(sql,values).then(data=>{
+        res.status(200).json(data.rows);
+    }).catch(error=>{
+        errorHandler(error,req,res)
+    })
+};
+
+
+    function deletefilmHandler(req,res){
+        const id = req.params.id;
+        const sql = `DELETE FROM MoviesLibrary WHERE id=${id};` 
+        // DELETE FROM table_name WHERE condition;
+    
+        client.query(sql).then(()=>{
+            res.status(200).send("The film has been deleted");
+            // res.status(204).json({});
+        }).catch(error=>{
+            errorHandler(error,req,res)
+        });
+    };
+
+
 function notfoundHandler(req,res){
     return res.status(404).send('huh????')
 
@@ -183,6 +232,4 @@ client.connect().then(()=>{
     app.listen(port, ()=> {
         console.log(`listen to port ${port}`)
     })
-
-});
-
+})
