@@ -192,7 +192,7 @@ function oneFilmHandler(req,res){
 
 function updatefilmHandler (req,res){
     const id = req.params.id;
-    console.log(req.params.name);
+    //console.log(req.params.name);
     //const film = req.body;
     const sql = `UPDATE MoviesLibrary SET title =$1, release_date = $2, poster_path = $3 ,overview=$4, WHERE id=$5 RETURNING *;` 
     let values=[req.body.title,req.body.release_date,req.body.poster_path,req.body.overview,id];
