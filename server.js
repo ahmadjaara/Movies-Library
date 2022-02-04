@@ -10,7 +10,7 @@ const client = new pg.Client(process.env.DATABASE_URL);
 
 
 
-const port=process.env.PORT;
+const port=process.env.PORT || 3000;
 
 const app =express();
 app.use(cors());
@@ -37,7 +37,7 @@ app.get('/getMovies',getMovie);
 app.get('/oneFilm/:id',oneFilmHandler);
 
 
-app.put('/updatefilm/:id',updatefilmHandler); // the name param is just for testing 
+app.put('/updatefilm/:idclear',updatefilmHandler); // the name param is just for testing 
 app.delete('/deletefilm/:id',deletefilmHandler);
 
 
@@ -226,7 +226,7 @@ function errorHandler (error,req,res){
         messgae : "error"
         };
     res.status(500).send(err)}
-
+    
 
 client.connect().then(()=>{
     app.listen(port, ()=> {
