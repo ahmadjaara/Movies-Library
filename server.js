@@ -40,7 +40,7 @@ app.get('/getMovies',getMovie);
 app.get('/oneFilm/:id',oneFilmHandler);
 
 
-app.put('/updatefilm/:idclear',updatefilmHandler); // the name param is just for testing 
+app.put('/updatefilm/:id',updatefilmHandler); // the name param is just for testing 
 app.delete('/deletefilm/:id',deletefilmHandler);
 
 
