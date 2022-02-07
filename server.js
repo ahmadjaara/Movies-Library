@@ -6,11 +6,11 @@ const axios =require('axios');
 const pg =require('pg');//it provide 
 const { database } = require('pg');
 
-//const client = new pg.Client(process.env.DATABASE_URL);
-const client = new pg.Client({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
-})
+const client = new pg.Client(process.env.DATABASE_URL);
+// const client = new pg.Client({
+//     connectionString: process.env.DATABASE_URL,
+//     ssl: { rejectUnauthorized: false }
+// })
 
 
 const port=process.env.PORT;
@@ -189,13 +189,12 @@ function oneFilmHandler(req,res){
         errorHandler(error,req,res)
     });
 }
-
 function updatefilmHandler (req,res){
     const id = req.params.id;
     //console.log(req.params.name);
     //const film = req.body;
-    const sql = `UPDATE MoviesLibrary SET title =$1, release_date = $2, poster_path = $3 ,overview=$4, WHERE id=$5 RETURNING *;` 
-    let values=[req.body.title,req.body.release_date,req.body.poster_path,req.body.overview,id];
+    const sql = `UPDATE MoviesLibrary SET title =$1 , release_date=$2 WHERE id=${req.params.id} RETURNING *;` 
+    let values=[req.body.title,req.body.release_date];
     client.query(sql,values).then(data=>{
         res.status(200).json(data.rows);
     }).catch(error=>{
