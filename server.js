@@ -193,8 +193,8 @@ function updatefilmHandler (req,res){
     const id = req.params.id;
     //console.log(req.params.name);
     //const film = req.body;
-    const sql = `UPDATE MoviesLibrary SET title =$1 , release_date=$2 WHERE id=${req.params.id} RETURNING *;` 
-    let values=[req.body.title,req.body.release_date];
+    const sql = `UPDATE MoviesLibrary SET title =$1 , release_date=$2 , poster_path=$3 , overview=$4 WHERE id=${req.params.id} RETURNING *;` 
+    let values=[req.body.title,req.body.release_date,req.body.poster_path,req.body.overview];
     client.query(sql,values).then(data=>{
         res.status(200).json(data.rows);
     }).catch(error=>{
