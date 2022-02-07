@@ -6,11 +6,11 @@ const axios =require('axios');
 const pg =require('pg');//it provide 
 const { database } = require('pg');
 
-const client = new pg.Client(process.env.DATABASE_URL);
-// const client = new pg.Client({
-//     connectionString: process.env.DATABASE_URL,
-//     ssl: { rejectUnauthorized: false }
-// })
+// const client = new pg.Client(process.env.DATABASE_URL);
+const client = new pg.Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+})
 
 
 const port=process.env.PORT;
